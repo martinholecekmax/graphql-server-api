@@ -1,0 +1,40 @@
+{
+  "name": "grahql-server",
+  "version": "1.0.0",
+  "description": "GraphQL Server API using Apollo Server, MongoDB, and Mongoose",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "build": "babel server.js -d dist",
+    "start": "nodemon --exec babel-node -r dotenv/config server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.3.2",
+    "@graphql-tools/schema": "^9.0.14",
+    "aws-sdk": "^2.1306.0",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-upload": "^16.0.2",
+    "graphql-ws": "^5.11.2",
+    "mongoose": "^6.9.0",
+    "url-join": "^5.0.0",
+    "uuid": "^9.0.0",
+    "ws": "^8.12.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "@babel/node": "^7.20.7",
+    "@babel/preset-env": "^7.20.2",
+    "@types/graphql-upload": "^15.0.2",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "eslint": "^8.33.0"
+  }
+}
