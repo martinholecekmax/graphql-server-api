@@ -93,6 +93,6 @@ The URL of the image file is stored in the mongoDB database.
 
 Each product can be associated with a category. Products and categories can be linked by using the `products` field in the `Category` type. This field is an array of `Product` types. This allows products to be grouped and filtered by category.
 
-# Conclusion
+## Conclusion
 
 This GraphQL server provides a flexible API for managing products, categories, and images. The data is stored in MongoDB and the server supports a range of queries and mutations for accessing and updating the data.
