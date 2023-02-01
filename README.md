@@ -1,5 +1,18 @@
 # GraphQL Server API
 
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+3. [Clone the repository](#clone-the-repository)
+4. [Install dependencies](#install-dependencies)
+5. [Configure environment variables](#configure-environment-variables)
+6. [Install MongoDB](#install-mongodb)
+7. [Start the server](#start-the-server)
+8. [Uploading Images](#uploading-images)
+9. [Linking Products and Categories](#linking-products-and-categories)
+10. [Conclusion](#conclusion)
+
 ## Introduction
 
 This is the documentation for the GraphQL server that provides an API for managing products, categories, and images. The data is stored in MongoDB and the server is built using GraphQL.
@@ -24,7 +37,12 @@ Navigate to the project directory and run the following command:
 npm install
 ```
 
-**Note:** Nodemon is used for development. If you don't have it installed globally, you can install it with `npm install -g nodemon`.
+> **Note**
+> Nodemon is used for development. If you don't have it installed globally, you can install it with following command:
+
+```bash
+npm install -g nodemon
+```
 
 ## Configure environment variables
 
@@ -43,7 +61,8 @@ use test
 db.createUser({"user" : "test","pwd": "password","roles" : [{"role" : "read","db" : "test"},{"role" : "readWrite","db" : "test"}],"mechanisms" : ["SCRAM-SHA-1","SCRAM-SHA-256"]})
 ```
 
-**Note:** Use the same database name, username, and password in the `.env` file. Also, make sure to use strong passwords in production.
+> **Note**
+> Use the same database name, username, and password in the `.env` file. Also, make sure to use strong passwords in production.
 
 ## Start the server
 
