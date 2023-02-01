@@ -37,8 +37,7 @@ Navigate to the project directory and run the following command:
 npm install
 ```
 
-> **Note**
-> Nodemon is used for development. If you don't have it installed globally, you can install it with following command:
+**Note:** Nodemon is used for development. If you don't have it installed globally, you can install it with following command:
 
 ```bash
 npm install -g nodemon
@@ -61,8 +60,7 @@ use test
 db.createUser({"user" : "test","pwd": "password","roles" : [{"role" : "read","db" : "test"},{"role" : "readWrite","db" : "test"}],"mechanisms" : ["SCRAM-SHA-1","SCRAM-SHA-256"]})
 ```
 
-> **Note**
-> Use the same database name, username, and password in the `.env` file. Also, make sure to use strong passwords in production.
+**Note:** Use the same database name, username, and password in the `.env` file. Also, make sure to use strong passwords in production.
 
 ## Start the server
 
