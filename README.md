@@ -1,5 +1,7 @@
 # GraphQL Server API
 
+Simple GraphQL server for managing products, categories, and images.
+
 ## Table of Contents
 
 1. [Introduction](#introduction)
@@ -12,6 +14,7 @@
 8. [Uploading Images](#uploading-images)
 9. [Linking Products and Categories](#linking-products-and-categories)
 10. [Conclusion](#conclusion)
+11. [Contributing](#contributing)
 
 ## Introduction
 
@@ -96,3 +99,11 @@ Each product can be associated with a category. Products and categories can be l
 ## Conclusion
 
 This GraphQL server provides a flexible API for managing products, categories, and images. The data is stored in MongoDB and the server supports a range of queries and mutations for accessing and updating the data.
+
+The server also supports uploading images to a AWS S3 bucket. The URL of the image file is stored in the mongoDB database.
+
+The server is built using Node.js, Express, GraphQL, MongoDB, and Mongoose.
+
+## Contributing
+
+If you have any suggestions or find any bugs, please create an issue or submit a pull request.
