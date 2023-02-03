@@ -10,11 +10,23 @@ Simple GraphQL server for managing products, categories, and images.
 - [Install dependencies](#install-dependencies)
 - [Configure environment variables](#configure-environment-variables)
 - [Install MongoDB](#install-mongodb)
-- [Start the server](#start-the-server)
-- [Uploading Images](#uploading-images)
-- [Deleting Images](#deleting-images)
-- [Linking Products and Categories](#linking-products-and-categories)
 - [Authentication](#authentication)
+- [Start the server](#start-the-server)
+- [GraphQL Queries](#graphql-queries)
+  - [Uploading Images](#uploading-images)
+  - [Deleting Images](#deleting-images)
+  - [Getting All Images](#getting-all-images)
+  - [Getting All Products](#getting-all-products)
+  - [Getting Single Product](#getting-single-product)
+  - [Creating Products](#creating-products)
+  - [Updating Products](#updating-products)
+  - [Deleting Products](#deleting-products)
+  - [Getting All Categories](#getting-all-categories)
+  - [Getting Single Category](#getting-single-category)
+  - [Creating Categories](#creating-categories)
+  - [Updating Categories](#updating-categories)
+  - [Deleting Categories](#deleting-categories)
+  - [Linking Products and Categories](#linking-products-and-categories)
 - [Conclusion](#conclusion)
 - [Contributing](#contributing)
 
@@ -67,6 +79,29 @@ db.createUser({"user" : "test","pwd": "password","roles" : [{"role" : "read","db
 
 **Note:** Use the same database name, username, and password in the `.env` file. Also, make sure to use strong passwords in production.
 
+## Authentication
+
+It's a good practice to protect your GraphQL API with authentication, especially if you are using it for a production application. This server uses simple authentication using hardcoded access key sent in the `x-access-token` header. The access key is stored in the `.env` file and is used to verify the user.
+
+```bash
+# .env
+API_KEY='ae86OfQigu8yUoPcrHxFbWHxzDm91ZJxp0lSlm2I'
+```
+
+Following image shows how to add the access key in the `Headers` section of the Altair GraphQL Client.
+
+![Altair GraphQL Client](src/assets/altair-graphql-client.png)
+
+I also had to add the `Apollo-Require-Preflight` header in the `Headers` section of the GraphQL playground and set it to `true` in order to avoid the `CSRF` blocked error.
+
+You can also use the GraphQL playground to test the API and add the access key in the HTTP Headers section as shown in the following image. However, the GraphQL playground does not support sending the image file that is required for the `uploadImage` mutation.
+
+![GraphQL Playground](src/assets/graphql-playground.png)
+
+The access key is used only for mutation operations, however, it could be used for queries as well by adding the middleware function `authenticate` from `middlewares/auth.js` to the resolver function. This will automatically check if the user is authenticated before executing the query. If the client does not send the access key in the `x-access-token` header or if the access key is invalid, the query will return an error `Not authenticated`. Queries can be executed without the access key. This is useful for public data that can be accessed by anyone which could be useful in some cases.
+
+The access key is used only for demonstration purposes. In a production application, you should use a more secure method of authentication.
+
 ## Start the server
 
 To start the server, run the following command:
@@ -77,7 +112,11 @@ npm start
 
 Server will start on port 4000 by default (can be changed in `.env` file) and the GraphQL playground will be available at `http://localhost:4000/graphql`
 
-## Uploading Images
+## GraphQL Queries
+
+Following are the examples of GraphQL queries that can be executed in the GraphQL playground or Altair GraphQL Client.
+
+### Uploading Images
 
 The server allows images to be uploaded and stored in a AWS S3 bucket. The following environment variables need to be set in order to upload images:
 
@@ -148,7 +187,7 @@ You could add uploading images to products in a single request by adding upload 
 
 This depends on your use case and you should choose the best solution for your application.
 
-## Deleting Images
+### Deleting Images
 
 You can delete images using the `removeImage` mutation which removes the image from the database, but not from the AWS S3 bucket. This is because sometimes you might want to keep the image in the bucket for future use.
 
@@ -182,32 +221,345 @@ I've commented out the code that deletes the image from the bucket in the `remov
 
 The image is only deleted from `images` collection in the database and not from the products `images` array. You have to update the product and remove the image from the `images` array and send the updated product to the `updateProduct` mutation in separate requests.
 
-## Linking Products and Categories
+### Getting All Images
 
-Each product can be associated with a category. Products and categories can be linked by using the `products` field in the `Category` type. This field is an array of `Product` types. This allows products to be grouped and filtered by category.
+You can get all images using the `allImages` query. The following is an example of how to get all images:
 
-## Authentication
-
-It's a good practice to protect your GraphQL API with authentication, especially if you are using it for a production application. This server uses simple authentication using hardcoded access key sent in the `x-access-token` header. The access key is stored in the `.env` file and is used to verify the user.
-
-```bash
-# .env
-API_KEY='ae86OfQigu8yUoPcrHxFbWHxzDm91ZJxp0lSlm2I'
+```graphql
+query AllImages {
+  allImages {
+    alt
+    createdAt
+    fileName
+    id
+    imageType
+    url
+  }
+}
 ```
 
-Following image shows how to add the access key in the `Headers` section of the Altair GraphQL Client.
+Note: You can also get all images for a specific product using the `product` query.
 
-![Altair GraphQL Client](src/assets/altair-graphql-client.png)
+### Getting All Products
 
-I also had to add the `Apollo-Require-Preflight` header in the `Headers` section of the GraphQL playground and set it to `true` in order to avoid the `CSRF` blocked error.
+You can get all products using the `allProducts` query. The following is an example of how to get all products:
 
-You can also use the GraphQL playground to test the API and add the access key in the HTTP Headers section as shown in the following image. However, the GraphQL playground does not support sending the image file that is required for the `uploadImage` mutation.
+```graphql
+query AllProducts {
+  allProducts {
+    id
+    description
+    price
+    title
+    images {
+      fileName
+    }
+  }
+}
+```
 
-![GraphQL Playground](src/assets/graphql-playground.png)
+### Getting Single Product
 
-The access key is used only for mutation operations, however, it could be used for queries as well by adding the middleware function `authenticate` from `middlewares/auth.js` to the resolver function. This will automatically check if the user is authenticated before executing the query. If the client does not send the access key in the `x-access-token` header or if the access key is invalid, the query will return an error `Not authenticated`. Queries can be executed without the access key. This is useful for public data that can be accessed by anyone which could be useful in some cases.
+You can get a single product using the `product` query. The following is an example of how to get a single product:
 
-The access key is used only for demonstration purposes. In a production application, you should use a more secure method of authentication.
+```graphql
+query Product($productId: ID!) {
+  product(id: $productId) {
+    id
+    title
+    description
+    price
+    images {
+      id
+      fileName
+      url
+      alt
+      imageType
+      createdAt
+      rootDirectory
+    }
+  }
+}
+```
+
+You have to set the `productId` variable in the `Variables` section:
+
+```json
+{
+  "productId": "product-id-from-the-database"
+}
+```
+
+### Creating Products
+
+You can create products using the `createProduct` mutation. The following is an example of how to create a product:
+
+```graphql
+mutation CreateProduct($title: String!, $description: String!, $price: Float!) {
+  createProduct(title: $title, description: $description, price: $price) {
+    description
+    price
+    title
+  }
+}
+```
+
+You have to set following variables in the `Variables` section:
+
+```json
+{
+  "title": "Product title",
+  "description": "Product description",
+  "price": 10.99
+}
+```
+
+### Updating Products
+
+You can update products using the `updateProduct` mutation. The following is an example of how to update a product:
+
+```graphql
+mutation UpdateProduct(
+  $updateProductId: ID!
+  $title: String
+  $description: String
+  $price: Float
+  $images: [ID]
+) {
+  updateProduct(
+    id: $updateProductId
+    title: $title
+    description: $description
+    price: $price
+    images: $images
+  ) {
+    description
+    price
+    title
+    images {
+      id
+      alt
+      url
+      fileName
+      imageType
+      createdAt
+      rootDirectory
+    }
+  }
+}
+```
+
+You have to set following variables in the `Variables` section:
+
+```json
+{
+  "updateProductId": "product-id-from-the-database",
+  "title": "Updated Product title",
+  "description": "Update Product description",
+  "price": 9.99,
+  "images": ["image-id-from-the-database"]
+}
+```
+
+### Deleting Products
+
+You can delete products using the `removeProduct` mutation. The following is an example of how to delete a product:
+
+```graphql
+mutation RemoveProduct($removeProductId: ID!) {
+  removeProduct(id: $removeProductId) {
+    id
+    title
+    description
+    price
+    images {
+      id
+      fileName
+      url
+      alt
+      imageType
+      createdAt
+      rootDirectory
+    }
+  }
+}
+```
+
+You have to set following variables in the `Variables` section:
+
+```json
+{
+  "removeProductId": "product-id-from-the-database"
+}
+```
+
+### Getting All Categories
+
+You can get all categories using the `allCategories` query. The following is an example of how to get all categories:
+
+```graphql
+query AllCategories {
+  allCategories {
+    id
+    title
+    description
+    products {
+      id
+      title
+    }
+  }
+}
+```
+
+### Getting Single Category
+
+You can get a single category using the `category` query. The following is an example of how to get a single category:
+
+```graphql
+query Category($categoryId: ID!) {
+  category(id: $categoryId) {
+    id
+    title
+    description
+    products {
+      id
+    }
+  }
+}
+```
+
+You have to set the `categoryId` variable in the `Variables` section:
+
+```json
+{
+  "categoryId": "category-id-from-the-database"
+}
+```
+
+### Creating Categories
+
+You can create categories using the `createCategory` mutation. The following is an example of how to create a category:
+
+```graphql
+mutation CreateCategory(
+  $title: String!
+  $products: [ID]!
+  $description: String!
+) {
+  createCategory(
+    title: $title
+    products: $products
+    description: $description
+  ) {
+    id
+    description
+    products {
+      description
+      price
+      title
+    }
+    title
+  }
+}
+```
+
+You have to set following variables in the `Variables` section:
+
+```json
+{
+  "title": "Category title",
+  "description": "Category description",
+  "products": ["product-id-from-the-database"]
+}
+```
+
+### Updating Categories
+
+You can update categories using the `updateCategory` mutation. The following is an example of how to update a category:
+
+```graphql
+mutation UpdateCategory(
+  $updateCategoryId: ID!
+  $title: String
+  $description: String
+  $products: [ID]
+) {
+  updateCategory(
+    id: $updateCategoryId
+    title: $title
+    description: $description
+    products: $products
+  ) {
+    id
+    title
+    description
+    products {
+      description
+    }
+  }
+}
+```
+
+You have to set following variables in the `Variables` section:
+
+```json
+{
+  "updateCategoryId": "category-id-from-the-database",
+  "title": "Updated Category title",
+  "description": "Updated Category description",
+  "products": ["product-id-from-the-database"]
+}
+```
+
+### Deleting Categories
+
+You can delete categories using the `removeCategory` mutation. The following is an example of how to delete a category:
+
+```graphql
+mutation RemoveCategory($removeCategoryId: ID!) {
+  removeCategory(id: $removeCategoryId) {
+    id
+    title
+    description
+  }
+}
+```
+
+You have to set following variables in the `Variables` section:
+
+```json
+{
+  "removeCategoryId": "category-id-from-the-database"
+}
+```
+
+### Linking Products and Categories
+
+Each product can be associated with a category. Products and categories can be linked by using the `products` field in the `Category` type. This field is an array of `Product` types. The following is an example of how you can see the products associated with a category:
+
+```graphql
+query Category($categoryId: ID!) {
+  category(id: $categoryId) {
+    id
+    title
+    description
+    products {
+      id
+      title
+      description
+      price
+    }
+  }
+}
+```
+
+You have to set the `categoryId` variable in the `Variables` section:
+
+```json
+{
+  "categoryId": "category-id-from-the-database"
+}
+```
 
 ## Conclusion
 

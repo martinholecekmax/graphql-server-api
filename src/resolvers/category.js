@@ -4,6 +4,9 @@ export const Query = {
   allCategories: async (parent, args, { models }) => {
     return await models.Category.find();
   },
+  category: async (parent, args, { models }) => {
+    return await models.Category.findById(args.id);
+  },
 };
 
 export const Mutation = {
@@ -25,6 +28,14 @@ export const Mutation = {
     category.products = args.products || category.products;
 
     return await category.save();
+  }),
+  removeCategory: authenticate(async (parent, args, { models }) => {
+    const category = await models.Category.findById(args.id);
+    if (!category) {
+      throw new Error('Category not found!');
+    }
+
+    return await category.remove();
   }),
 };
 

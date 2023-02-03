@@ -7,16 +7,22 @@ const Query = `#graphql
 
   type Query {
     allProducts: [Product]
+    product(id: ID!): Product
+
     allCategories: [Category]
+    category(id: ID!): Category
+
     allImages: [Image]
   }
 
   type Mutation {
     createProduct(title: String!, description: String!, price: Float!): Product
     updateProduct(id: ID!,title: String, description: String, price: Float, images: [ID]): Product
+    removeProduct(id: ID!): Product
 
     createCategory(title: String!, description: String! products: [ID]!): Category
     updateCategory(id: ID!, title: String, description: String, products: [ID]): Category
+    removeCategory(id: ID!): Category
 
     uploadImage(file: Upload! alt: String): Image
     removeImage(id: ID!): Image

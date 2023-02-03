@@ -5,6 +5,9 @@ export const Query = {
   allProducts: async (parent, args, { models }) => {
     return await models.Product.find();
   },
+  product: async (parent, args, { models }) => {
+    return await models.Product.findById(args.id);
+  },
 };
 
 export const Mutation = {
@@ -44,6 +47,14 @@ export const Mutation = {
       productUpdated: { title: product.title },
     });
     return await product.save();
+  }),
+  removeProduct: authenticate(async (parent, args, { models }) => {
+    const product = await models.Product.findById(args.id);
+    if (!product) {
+      throw new Error('Product not found!');
+    }
+
+    return await product.remove();
   }),
 };
 
