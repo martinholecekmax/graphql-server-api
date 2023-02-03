@@ -2,6 +2,8 @@
 
 Simple GraphQL server for managing products, categories, and images.
 
+The server is built using the latest version of [Apollo Server v4](https://www.apollographql.com/docs/apollo-server/). It uses the ES6 module syntax supported by Node.js v14.0.0 and above.
+
 ## Table of Contents
 
 - [Introduction](#introduction)
