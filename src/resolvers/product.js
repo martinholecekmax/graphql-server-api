@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { authenticate } from '../middlewares/auth.js';
 
 export const Query = {
   allProducts: async (parent, args, { models }) => {
@@ -7,15 +8,15 @@ export const Query = {
 };
 
 export const Mutation = {
-  createProduct: async (parent, args, { models, pubsub }) => {
+  createProduct: authenticate(async (parent, args, { models, pubsub }) => {
     pubsub.publish('PRODUCT_ADDED', { productAdded: { title: args.title } });
     return await models.Product.create({
       title: args.title,
       description: args.description,
       price: args.price,
     });
-  },
-  updateProduct: async (parent, args, { models, pubsub }) => {
+  }),
+  updateProduct: authenticate(async (parent, args, { models, pubsub }) => {
     const product = await models.Product.findById(args.id);
     if (!product) {
       throw new Error('Product not found!');
@@ -43,7 +44,7 @@ export const Mutation = {
       productUpdated: { title: product.title },
     });
     return await product.save();
-  },
+  }),
 };
 
 export const Subscription = {

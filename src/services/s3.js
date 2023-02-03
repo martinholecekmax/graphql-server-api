@@ -71,7 +71,7 @@ export const removeFile = async (filename, destination = '') => {
 
   try {
     await s3.deleteObject(params).promise();
-    // console.log(chalk.green(`Successfully deleted file: ${filename}`));
+    console.log(chalk.green(`Successfully deleted file: ${filename}`));
   } catch (error) {
     console.log(chalk.red(`Failed Delete: ${filename}`));
     console.log('error', error);

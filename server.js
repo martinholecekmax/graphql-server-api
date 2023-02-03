@@ -69,11 +69,20 @@ const Server = async () => {
     bodyParser.json(),
     graphqlUploadExpress(),
     expressMiddleware(server, {
-      context: async ({ req }) => ({
-        token: req.headers.token,
-        pubsub,
-        models,
-      }),
+      context: async ({ req }) => {
+        const token = req.headers['x-access-token'];
+        let auth = false;
+
+        if (token && token === process.env.API_KEY) {
+          auth = true;
+        }
+
+        return {
+          auth,
+          pubsub,
+          models,
+        };
+      },
     })
   );
 

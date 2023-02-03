@@ -1,4 +1,5 @@
 import urlJoin from 'url-join';
+import { authenticate } from '../middlewares/auth.js';
 import { uploadFile } from '../services/s3.js';
 
 export const Query = {
@@ -8,7 +9,7 @@ export const Query = {
 };
 
 export const Mutation = {
-  uploadImage: async (parent, args, { models }) => {
+  uploadImage: authenticate(async (parent, args, { models }) => {
     const { file } = args;
     if (!file) {
       throw new Error('No file provided!');
@@ -24,12 +25,19 @@ export const Mutation = {
       alt: args.alt || '',
       imageType: mimetype,
     });
-  },
-  removeImage: async (parent, args, { models }) => {
+  }),
+  removeImage: authenticate(async (parent, args, { models }) => {
     const image = await models.Image.findById(args.id);
     if (!image) {
       throw new Error('Image not found!');
     }
+
+    // try {
+    //   await removeFile(image.fileName, image.rootDirectory);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
     return await image.remove();
-  },
+  }),
 };
