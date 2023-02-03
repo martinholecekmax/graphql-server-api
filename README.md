@@ -12,7 +12,7 @@ Simple GraphQL server for managing products, categories, and images.
 - [Install MongoDB](#install-mongodb)
 - [Authentication](#authentication)
 - [Start the server](#start-the-server)
-- [GraphQL Queries](#graphql-queries)
+- [GraphQL Queries and Mutations](#graphql-queries-and-mutations)
   - [Uploading Images](#uploading-images)
   - [Deleting Images](#deleting-images)
   - [Getting All Images](#getting-all-images)
@@ -27,6 +27,9 @@ Simple GraphQL server for managing products, categories, and images.
   - [Updating Categories](#updating-categories)
   - [Deleting Categories](#deleting-categories)
   - [Linking Products and Categories](#linking-products-and-categories)
+- [Subscriptions](#subscriptions)
+  - [Product Created Subscription](#product-created-subscription)
+  - [Product Updated Subscription](#product-updated-subscription)
 - [Conclusion](#conclusion)
 - [Contributing](#contributing)
 
@@ -112,7 +115,7 @@ npm start
 
 Server will start on port 4000 by default (can be changed in `.env` file) and the GraphQL playground will be available at `http://localhost:4000/graphql`
 
-## GraphQL Queries
+## GraphQL Queries and Mutations
 
 Following are the examples of GraphQL queries that can be executed in the GraphQL playground or Altair GraphQL Client.
 
@@ -558,6 +561,43 @@ You have to set the `categoryId` variable in the `Variables` section:
 ```json
 {
   "categoryId": "category-id-from-the-database"
+}
+```
+
+## Subscriptions
+
+The GraphQL server supports subscriptions for the following events:
+
+- Product created
+- Product updated
+
+### Product Created Subscription
+
+You can subscribe to the `productAdded` subscription. The following is an example of how to subscribe to the `productAdded` subscription:
+
+```graphql
+subscription ProductCreated {
+  productAdded {
+    id
+    title
+    description
+    price
+  }
+}
+```
+
+### Product Updated Subscription
+
+You can subscribe to the `productUpdated` subscription. The following is an example of how to subscribe to the `productUpdated` subscription:
+
+```graphql
+subscription ProductUpdated {
+  productUpdated {
+    id
+    title
+    description
+    price
+  }
 }
 ```
 
