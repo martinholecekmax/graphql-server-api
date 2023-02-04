@@ -1,5 +1,3 @@
-// require('dotenv').config();
-
 import S3 from 'aws-sdk/clients/s3.js';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
@@ -48,7 +46,7 @@ export const uploadFile = async (
 
   const result = await s3.upload(uploadParams).promise();
   if (!result) {
-    console.error('Error: Upload Failed, uploadParams:', uploadParams);
+    console.log(chalk.red('Error: Upload Failed, uploadParams:', uploadParams));
   }
   return { filename: imageName, mimetype };
 };
