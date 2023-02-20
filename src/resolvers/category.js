@@ -26,6 +26,7 @@ export const Mutation = {
     category.title = args.title || category.title;
     category.description = args.description || category.description;
     category.products = args.products || category.products;
+    category.updatedAt = Date.now();
 
     return await category.save();
   }),

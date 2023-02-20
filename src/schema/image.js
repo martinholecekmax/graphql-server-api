@@ -5,7 +5,7 @@ export const typeDefs = `#graphql
         url: String
         alt: String
         imageType: String
-        createdAt: String
+        createdAt: Date
         rootDirectory: String
     }
 `;

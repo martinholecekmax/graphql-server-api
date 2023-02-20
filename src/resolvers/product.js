@@ -42,6 +42,7 @@ export const Mutation = {
     product.title = args.title || product.title;
     product.description = args.description || product.description;
     product.price = args.price || product.price;
+    product.updatedAt = Date.now();
 
     pubsub.publish('PRODUCT_UPDATED', {
       productUpdated: { title: product.title },

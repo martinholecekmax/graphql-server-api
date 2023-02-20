@@ -4,6 +4,7 @@ import { typeDefs as Image } from './image.js';
 
 const Query = `#graphql
   scalar Upload
+  scalar Date
 
   type Query {
     allProducts: [Product]

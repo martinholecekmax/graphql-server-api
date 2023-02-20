@@ -4,5 +4,7 @@ export const typeDefs = `#graphql
         title: String
         description: String
         products: [Product]
+        createdAt: Date
+        updatedAt: Date
     }
 `;
