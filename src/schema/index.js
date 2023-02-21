@@ -17,12 +17,12 @@ const Query = `#graphql
   }
 
   type Mutation {
-    createProduct(title: String!, description: String!, price: Float!): Product
-    updateProduct(id: ID!,title: String, description: String, price: Float, images: [ID]): Product
+    createProduct(input: ProductInput): Product
+    updateProduct(input: ProductInput): Product
     removeProduct(id: ID!): Product
 
-    createCategory(title: String!, description: String! products: [ID]!): Category
-    updateCategory(id: ID!, title: String, description: String, products: [ID]): Category
+    createCategory(input: CategoryInput): Category
+    updateCategory(input: CategoryInput): Category
     removeCategory(id: ID!): Category
 
     uploadImage(file: Upload! alt: String): Image

@@ -10,23 +10,25 @@ export const Query = {
 };
 
 export const Mutation = {
-  createCategory: authenticate(async (parent, args, { models }) => {
+  createCategory: authenticate(async (parent, { input }, { models }) => {
     return await models.Category.create({
-      title: args.title,
-      description: args.description,
-      products: args.products,
+      title: input.title,
+      description: input.description,
+      products: input.products,
+      path: input.path,
     });
   }),
-  updateCategory: authenticate(async (parent, args, { models }) => {
-    const category = await models.Category.findById(args.id);
+  updateCategory: authenticate(async (parent, { input }, { models }) => {
+    const category = await models.Category.findById(input.id);
     if (!category) {
       throw new Error('Category not found!');
     }
 
-    category.title = args.title || category.title;
-    category.description = args.description || category.description;
-    category.products = args.products || category.products;
+    category.title = input.title || category.title;
+    category.description = input.description || category.description;
+    category.products = input.products || category.products;
     category.updatedAt = Date.now();
+    category.path = input.path || category.path;
 
     return await category.save();
   }),

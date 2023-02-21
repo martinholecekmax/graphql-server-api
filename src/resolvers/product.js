@@ -11,23 +11,24 @@ export const Query = {
 };
 
 export const Mutation = {
-  createProduct: authenticate(async (parent, args, { models, pubsub }) => {
-    pubsub.publish('PRODUCT_ADDED', { productAdded: { title: args.title } });
+  createProduct: authenticate(async (parent, { input }, { models, pubsub }) => {
+    pubsub.publish('PRODUCT_ADDED', { productAdded: { title: input.title } });
     return await models.Product.create({
-      title: args.title,
-      description: args.description,
-      price: args.price,
+      title: input.title,
+      description: input.description,
+      price: input.price,
+      path: input.path,
     });
   }),
-  updateProduct: authenticate(async (parent, args, { models, pubsub }) => {
-    const product = await models.Product.findById(args.id);
+  updateProduct: authenticate(async (parent, { input }, { models, pubsub }) => {
+    const product = await models.Product.findById(input.id);
     if (!product) {
       throw new Error('Product not found!');
     }
 
     // Validate if the images exist
-    if (args.images) {
-      const filterObjectIds = args.images.filter((id) =>
+    if (input.images) {
+      const filterObjectIds = input.images.filter((id) =>
         mongoose.Types.ObjectId.isValid(id)
       );
       for (const id of filterObjectIds) {
@@ -39,10 +40,11 @@ export const Mutation = {
       product.images = filterObjectIds || product.images;
     }
 
-    product.title = args.title || product.title;
-    product.description = args.description || product.description;
-    product.price = args.price || product.price;
+    product.title = input.title || product.title;
+    product.description = input.description || product.description;
+    product.price = input.price || product.price;
     product.updatedAt = Date.now();
+    product.path = input.path || product.path;
 
     pubsub.publish('PRODUCT_UPDATED', {
       productUpdated: { title: product.title },
