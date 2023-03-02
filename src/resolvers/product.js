@@ -12,13 +12,14 @@ export const Query = {
 
 export const Mutation = {
   createProduct: authenticate(async (parent, { input }, { models, pubsub }) => {
-    pubsub.publish('PRODUCT_ADDED', { productAdded: { title: input.title } });
-    return await models.Product.create({
+    const product = await models.Product.create({
       title: input.title,
       description: input.description,
       price: input.price,
       path: input.path,
     });
+    pubsub.publish('PRODUCT_ADDED', { productAdded: product });
+    return product;
   }),
   updateProduct: authenticate(async (parent, { input }, { models, pubsub }) => {
     const product = await models.Product.findById(input.id);
@@ -74,6 +75,9 @@ export const Subscription = {
 
 export const Product = {
   images: async (product, args, { models }) => {
+    if (!product.images || product.images.length === 0) {
+      return [];
+    }
     const images = await models.Image.find({
       _id: { $in: product.images, $type: 'objectId' },
     });

@@ -32,6 +32,7 @@ export const Mutation = {
       throw new Error('Image not found!');
     }
 
+    /// Uncomment this code to remove the image from S3
     // try {
     //   await removeFile(image.fileName, image.rootDirectory);
     // } catch (error) {
