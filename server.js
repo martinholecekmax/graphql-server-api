@@ -86,6 +86,11 @@ const Server = async () => {
     })
   );
 
+  // Home route for testing
+  app.get('/', (req, res) => {
+    res.send('Hello World!');
+  });
+
   await new Promise((resolve) =>
     httpServer.listen({ port: process.env.PORT }, resolve)
   );
