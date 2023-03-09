@@ -6,6 +6,7 @@ export const typeDefs = `#graphql
         description: String
         price: Float
         images: [Image]
+        imageCollection: ImageCollection
         createdAt: Date
         updatedAt: Date
     }
@@ -17,5 +18,6 @@ export const typeDefs = `#graphql
         description: String
         price: Float
         images: [ID]
+        imageCollection: ID
     }
 `;

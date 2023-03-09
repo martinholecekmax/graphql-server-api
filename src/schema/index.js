@@ -1,6 +1,7 @@
 import { typeDefs as Product } from './product.js';
 import { typeDefs as Category } from './category.js';
 import { typeDefs as Image } from './image.js';
+import { typeDefs as ImageCollection } from './imageCollection.js';
 
 const Query = `#graphql
   scalar Upload
@@ -14,6 +15,9 @@ const Query = `#graphql
     category(id: ID!): Category
 
     allImages: [Image]
+
+    allImageCollections: [ImageCollection]
+    imageCollection(id: ID!): ImageCollection
   }
 
   type Mutation {
@@ -27,6 +31,12 @@ const Query = `#graphql
 
     uploadImage(file: Upload! alt: String): Image
     removeImage(id: ID!): Image
+
+    createImageCollection(input: ImageCollectionInput): ImageCollection
+    updateImageCollection(input: ImageCollectionInput): ImageCollection
+    removeImageCollection(id: ID!): ImageCollection
+    uploadImageToImageCollection(id: ID!, file: Upload! alt: String): ImageCollection
+    removeImageFromImageCollection(id: ID!, imageId: ID!): ImageCollection
   }
 
   type Subscription {
@@ -35,6 +45,6 @@ const Query = `#graphql
   }
 `;
 
-const typeDefs = [Query, Product, Category, Image];
+const typeDefs = [Query, Product, Category, Image, ImageCollection];
 
 export default typeDefs;

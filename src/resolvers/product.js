@@ -18,6 +18,10 @@ export const Mutation = {
       price: input.price,
       path: input.path,
     });
+    const imageCollection = await models.ImageCollection.create({
+      images: input.images || [],
+    });
+    product.imageCollection = imageCollection;
     pubsub.publish('PRODUCT_ADDED', { productAdded: product });
     return product;
   }),
@@ -46,6 +50,16 @@ export const Mutation = {
     product.price = input.price || product.price;
     product.updatedAt = Date.now();
     product.path = input.path || product.path;
+
+    if (input.imageCollection) {
+      const imageCollection = await models.ImageCollection.findById(
+        input.imageCollection
+      );
+      if (!imageCollection) {
+        throw new Error('ImageCollection not found!');
+      }
+      product.imageCollection = imageCollection;
+    }
 
     pubsub.publish('PRODUCT_UPDATED', {
       productUpdated: { title: product.title },
@@ -82,5 +96,14 @@ export const Product = {
       _id: { $in: product.images, $type: 'objectId' },
     });
     return images;
+  },
+  imageCollection: async (product, args, { models }) => {
+    if (!product.imageCollection) {
+      return null;
+    }
+    const imageCollection = await models.ImageCollection.findById(
+      product.imageCollection
+    );
+    return imageCollection;
   },
 };

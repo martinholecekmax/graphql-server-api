@@ -11,6 +11,10 @@ const ProductSchema = new mongoose.Schema({
       ref: 'Image',
     },
   ],
+  imageCollection: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ImageCollection',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

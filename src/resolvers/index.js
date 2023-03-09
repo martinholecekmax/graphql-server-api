@@ -10,6 +10,10 @@ import { Mutation as CategoryMutation } from './category.js';
 import { Query as ImageQuery } from './image.js';
 import { Mutation as ImageMutation } from './image.js';
 
+import { ImageCollection } from './imageCollection.js';
+import { Query as ImageCollectionQuery } from './imageCollection.js';
+import { Mutation as ImageCollectionMutation } from './imageCollection.js';
+
 import { default as GraphQLUpload } from 'graphql-upload/GraphQLUpload.mjs';
 
 export const resolvers = {
@@ -18,15 +22,18 @@ export const resolvers = {
     ...ProductQuery,
     ...CategoryQuery,
     ...ImageQuery,
+    ...ImageCollectionQuery,
   },
   Mutation: {
     ...ProductMutation,
     ...CategoryMutation,
     ...ImageMutation,
+    ...ImageCollectionMutation,
   },
   Subscription: {
     ...ProductSubscription,
   },
   Product,
   Category,
+  ImageCollection,
 };
