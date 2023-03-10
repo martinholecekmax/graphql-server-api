@@ -30,6 +30,7 @@ const Query = `#graphql
     removeCategory(id: ID!): Category
 
     uploadImage(file: Upload! alt: String): Image
+    updateImage(id: ID! file: Upload alt: String): Image
     removeImage(id: ID!): Image
 
     createImageCollection(input: ImageCollectionInput): ImageCollection

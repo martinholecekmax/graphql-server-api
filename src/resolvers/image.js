@@ -26,6 +26,32 @@ export const Mutation = {
       imageType: mimetype,
     });
   }),
+  updateImage: authenticate(async (parent, { id, alt, file }, { models }) => {
+    const image = await models.Image.findById(id);
+    if (!image) {
+      throw new Error('Image not found!');
+    }
+
+    if (file) {
+      const rootDirectory = process.env.AWS_ROOT_DIRECTORY;
+      const { filename, mimetype } = await uploadFile(file, rootDirectory);
+
+      image.fileName = filename;
+      image.rootDirectory = rootDirectory;
+      image.url = urlJoin(
+        process.env.AWS_BUCKET_PUBLIC_URL,
+        rootDirectory,
+        filename
+      );
+      image.imageType = mimetype;
+    }
+
+    if (alt) {
+      image.alt = alt;
+    }
+
+    return await image.save();
+  }),
   removeImage: authenticate(async (parent, args, { models }) => {
     const image = await models.Image.findById(args.id);
     if (!image) {
