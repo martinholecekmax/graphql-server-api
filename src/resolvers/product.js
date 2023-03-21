@@ -87,12 +87,14 @@ export const Mutation = {
     });
     return await product.save();
   }),
-  removeProduct: authenticate(async (parent, args, { models }) => {
+  removeProduct: authenticate(async (parent, args, { models, pubsub }) => {
     const product = await models.Product.findById(args.id);
     if (!product) {
       throw new Error('Product not found!');
     }
-
+    pubsub.publish('PRODUCT_REMOVED', {
+      productRemoved: product,
+    });
     return await product.remove();
   }),
 };
@@ -106,6 +108,10 @@ export const Subscription = {
   productUpdated: {
     subscribe: (parent, args, { pubsub }) =>
       pubsub.asyncIterator('PRODUCT_UPDATED'),
+  },
+  productRemoved: {
+    subscribe: (parent, args, { pubsub }) =>
+      pubsub.asyncIterator('PRODUCT_REMOVED'),
   },
 };
 

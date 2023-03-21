@@ -62,6 +62,7 @@ const Query = gql`
   type Subscription {
     productAdded: Product
     productUpdated: Product
+    productRemoved: Product
   }
 `;
 
