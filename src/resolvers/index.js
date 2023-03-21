@@ -10,9 +10,13 @@ import { Mutation as CategoryMutation } from './category.js';
 import { Query as ImageQuery } from './image.js';
 import { Mutation as ImageMutation } from './image.js';
 
-import { ImageCollection } from './imageCollection.js';
-import { Query as ImageCollectionQuery } from './imageCollection.js';
-import { Mutation as ImageCollectionMutation } from './imageCollection.js';
+import { ImageCollection } from './image-collection.js';
+import { Query as ImageCollectionQuery } from './image-collection.js';
+import { Mutation as ImageCollectionMutation } from './image-collection.js';
+
+import { ProductCollection } from './product-collection.js';
+import { Query as ProductCollectionQuery } from './product-collection.js';
+import { Mutation as ProductCollectionMutation } from './product-collection.js';
 
 import { default as GraphQLUpload } from 'graphql-upload/GraphQLUpload.mjs';
 
@@ -23,12 +27,14 @@ export const resolvers = {
     ...CategoryQuery,
     ...ImageQuery,
     ...ImageCollectionQuery,
+    ...ProductCollectionQuery,
   },
   Mutation: {
     ...ProductMutation,
     ...CategoryMutation,
     ...ImageMutation,
     ...ImageCollectionMutation,
+    ...ProductCollectionMutation,
   },
   Subscription: {
     ...ProductSubscription,
@@ -36,4 +42,5 @@ export const resolvers = {
   Product,
   Category,
   ImageCollection,
+  ProductCollection,
 };

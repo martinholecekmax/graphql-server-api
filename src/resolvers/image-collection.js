@@ -64,6 +64,76 @@ export const Mutation = {
 
     return await imageCollection.remove();
   }),
+  uploadImageToImageCollection: authenticate(
+    async (parent, { id, image }, { models }) => {
+      const imageCollection = await models.ImageCollection.findById(id);
+      if (!imageCollection) {
+        throw new Error('ImageCollection not found!');
+      }
+
+      if (!image.file) {
+        throw new Error('No file provided!');
+      }
+
+      const rootDirectory = process.env.AWS_ROOT_DIRECTORY;
+      const { filename, mimetype } = await uploadFile(
+        image.file,
+        rootDirectory
+      );
+
+      const imageModel = await models.Image.create({
+        fileName: filename,
+        rootDirectory,
+        alt: image.alt || '',
+        imageType: mimetype,
+        url: urlJoin(
+          process.env.AWS_BUCKET_PUBLIC_URL,
+          rootDirectory,
+          filename
+        ),
+      });
+
+      imageCollection.images.push(imageModel.id);
+      return await imageCollection.save();
+    }
+  ),
+  updateImageInCollection: authenticate(
+    async (_, { id, image }, { models }) => {
+      const imageCollection = await models.ImageCollection.findById(id);
+      if (!imageCollection) {
+        throw new Error('Invalid Image Collection ID!');
+      }
+
+      const imageModel = await models.Image.findById(image.id);
+      if (!imageModel) {
+        throw new Error('Invalid Image ID!');
+      }
+
+      if (image.file) {
+        const rootDirectory = process.env.AWS_ROOT_DIRECTORY;
+        const { filename, mimetype } = await uploadFile(
+          image.file,
+          rootDirectory
+        );
+
+        imageModel.fileName = filename;
+        imageModel.imageType = mimetype;
+        imageModel.rootDirectory = rootDirectory;
+        imageModel.url = urlJoin(
+          process.env.AWS_BUCKET_PUBLIC_URL,
+          rootDirectory,
+          filename
+        );
+      }
+
+      imageModel.alt = image.alt || imageModel.alt;
+      imageModel.caption = image.caption || imageModel.caption;
+      imageModel.updatedAt = new Date();
+
+      await imageModel.save();
+      return imageCollection;
+    }
+  ),
   removeImageFromImageCollection: authenticate(
     async (parent, { id, imageId }, { models }) => {
       const imageCollection = await models.ImageCollection.findById(id);
@@ -71,37 +141,16 @@ export const Mutation = {
         throw new Error('ImageCollection not found!');
       }
 
-      if (imageCollection.images.length > 0) {
-        imageCollection.images = imageCollection.images.filter(
-          (id) => id.toString() !== imageId
-        );
-      }
+      // if (imageCollection.images.length > 0) {
+      //   imageCollection.images = imageCollection.images.filter(
+      //     (id) => id.toString() !== imageId
+      //   );
+      // }
 
-      return await imageCollection.save();
-    }
-  ),
-  uploadImageToImageCollection: authenticate(
-    async (parent, { id, file, alt }, { models }) => {
-      const imageCollection = await models.ImageCollection.findById(id);
-      if (!imageCollection) {
-        throw new Error('ImageCollection not found!');
-      }
-      const rootDirectory = process.env.AWS_ROOT_DIRECTORY;
-      const { filename, mimetype } = await uploadFile(file, rootDirectory);
-
-      const image = await models.Image.create({
-        fileName: filename,
-        rootDirectory,
-        url: urlJoin(
-          process.env.AWS_BUCKET_PUBLIC_URL,
-          rootDirectory,
-          filename
-        ),
-        alt: alt || '',
-        imageType: mimetype,
+      await imageCollection.updateOne({
+        $pull: { images: { $in: [imageId] } },
       });
 
-      imageCollection.images.push(image.id);
       return await imageCollection.save();
     }
   ),

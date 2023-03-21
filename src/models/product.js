@@ -5,15 +5,13 @@ const ProductSchema = new mongoose.Schema({
   path: String,
   description: String,
   price: Number,
-  images: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Image',
-    },
-  ],
   imageCollection: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ImageCollection',
+  },
+  productCollection: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductCollection',
   },
   createdAt: {
     type: Date,

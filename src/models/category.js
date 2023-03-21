@@ -4,12 +4,10 @@ const CategorySchema = new mongoose.Schema({
   title: String,
   path: String,
   description: String,
-  products: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
-    },
-  ],
+  productCollection: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductCollection',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

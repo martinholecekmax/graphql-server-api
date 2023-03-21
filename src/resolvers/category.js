@@ -1,21 +1,71 @@
 import { authenticate } from '../middlewares/auth.js';
 
 export const Query = {
-  allCategories: async (parent, args, { models }) => {
-    return await models.Category.find();
-  },
+  // fix: async (parent, args, { models }) => {
+  //   const categories = await models.Category.find();
+  //   for (const category of categories) {
+  //     const cat = await models.Category.findById(category._id);
+  //     const productCollection = await models.ProductCollection.create({
+  //       products: [],
+  //     });
+  //     cat.productCollection = productCollection;
+  //     await cat.save();
+  //     console.log('cat', cat);
+  //   }
+  //   return null;
+  // },
   category: async (parent, args, { models }) => {
     return await models.Category.findById(args.id);
+  },
+  allCategories: async (parent, { input }, { models }) => {
+    const { skip, limit, sort } = input || {};
+    const query = models.Category.find();
+
+    const sortField = sort?.field || 'title';
+    const sortOrder = sort?.order === 'DESC' ? -1 : 1;
+    const sortQuery = { [sortField]: sortOrder };
+    const limitQuery = limit ? limit : 10;
+    const skipQuery = skip ? skip : 0;
+
+    query.skip(skipQuery);
+    query.limit(limitQuery);
+    query.sort(sortQuery);
+
+    const nodes = await query;
+    // const totalCount = await models.Product.countDocuments(filterQuery);
+    const totalCount = await models.Category.countDocuments();
+    const currentPage = Math.ceil(skipQuery / limitQuery) + 1;
+    const pageCount = Math.ceil(totalCount / limitQuery);
+    const hasPreviousPage = currentPage > 1;
+    const hasNextPage = currentPage * limitQuery < totalCount;
+
+    const pageInfo = {
+      hasNextPage,
+      hasPreviousPage,
+      currentPage,
+      itemCount: nodes.length,
+      pageCount,
+      perPage: limitQuery,
+      totalCount,
+    };
+
+    return {
+      nodes,
+      pageInfo,
+    };
   },
 };
 
 export const Mutation = {
   createCategory: authenticate(async (parent, { input }, { models }) => {
+    const productCollection = await models.ProductCollection.create({
+      products: [],
+    });
     return await models.Category.create({
       title: input.title,
       description: input.description,
-      products: input.products,
       path: input.path,
+      productCollection,
     });
   }),
   updateCategory: authenticate(async (parent, { input }, { models }) => {
@@ -43,10 +93,72 @@ export const Mutation = {
 };
 
 export const Category = {
-  products: async (category, args, { models }) => {
-    const products = await models.Product.find({
-      _id: { $in: category.products, $type: 'objectId' },
-    });
-    return products;
+  productCollection: async (category, _, { models }) => {
+    if (category.productCollection) {
+      return await models.ProductCollection.findById(
+        category.productCollection
+      );
+    }
+    return [];
   },
+  // productCollection: async (category, { input }, { models }) => {
+  //   if (category.productCollection) {
+  //     return {
+  //       nodes: [],
+  //       pageInfo: {
+  //         hasNextPage: false,
+  //         hasPreviousPage: false,
+  //         currentPage: 1,
+  //         itemCount: 0,
+  //         pageCount: 1,
+  //         perPage: 10,
+  //         totalCount: 0,
+  //       },
+  //     };
+  //   }
+
+  //   const productCollection = models.ProductCollection.findById(
+  //     category.productCollection
+  //   );
+
+  //   const filterQuery = {
+  //     _id: { $in: productCollection.products, $type: 'objectId' },
+  //   };
+
+  //   const { skip, limit, sort } = input;
+
+  //   const query = models.Product.find(filterQuery);
+
+  //   const sortField = sort?.field || 'title';
+  //   const sortOrder = sort?.order === 'DESC' ? -1 : 1;
+  //   const sortQuery = { [sortField]: sortOrder };
+  //   const limitQuery = limit ? limit : 10;
+  //   const skipQuery = skip ? skip : 0;
+
+  //   query.skip(skipQuery);
+  //   query.limit(limitQuery);
+  //   query.sort(sortQuery);
+
+  //   const nodes = await query;
+  //   const totalCount = await models.Product.countDocuments(filterQuery);
+  //   const currentPage = Math.ceil(skipQuery / limitQuery) + 1;
+  //   const pageCount = Math.ceil(totalCount / limitQuery);
+  //   const hasPreviousPage = currentPage > 1;
+  //   const hasNextPage = currentPage * limitQuery < totalCount;
+
+  //   const pageInfo = {
+  //     hasNextPage,
+  //     hasPreviousPage,
+  //     currentPage,
+  //     itemCount: nodes.length,
+  //     pageCount,
+  //     perPage: limitQuery,
+  //     totalCount,
+  //   };
+
+  //   return {
+  //     nodes,
+  //     pageInfo,
+  //   };
+  // },
 };

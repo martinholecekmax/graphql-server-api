@@ -41,6 +41,7 @@ const Server = async () => {
       schema,
       context: async () => ({
         pubsub,
+        models,
       }),
     },
     wsServer
