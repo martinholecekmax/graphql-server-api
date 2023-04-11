@@ -1,45 +1,12 @@
 import { authenticate } from '../middlewares/auth.js';
+import { connectionHelper } from '../utils/connection.js';
 
 export const Query = {
-  product: async (parent, args, { models }) => {
+  product: async (_parent, args, { models }) => {
     return await models.Product.findById(args.id);
   },
-  allProducts: async (category, { input }, { models }) => {
-    const { sort, limit, skip } = input || {};
-    const query = models.Product.find();
-
-    const sortField = sort?.field || 'title';
-    const sortOrder = sort?.order === 'DESC' ? -1 : 1;
-    const sortQuery = { [sortField]: sortOrder };
-    const limitQuery = limit ? limit : 10;
-    const skipQuery = skip ? skip : 0;
-
-    query.skip(skipQuery);
-    query.limit(limitQuery);
-    query.sort(sortQuery);
-
-    const nodes = await query;
-    // const totalCount = await models.Product.countDocuments(filterQuery);
-    const totalCount = await models.Product.countDocuments();
-    const currentPage = Math.ceil(skipQuery / limitQuery) + 1;
-    const pageCount = Math.ceil(totalCount / limitQuery);
-    const hasPreviousPage = currentPage > 1;
-    const hasNextPage = currentPage * limitQuery < totalCount;
-
-    const pageInfo = {
-      hasNextPage,
-      hasPreviousPage,
-      currentPage,
-      itemCount: nodes.length,
-      pageCount,
-      perPage: limitQuery,
-      totalCount,
-    };
-
-    return {
-      nodes,
-      pageInfo,
-    };
+  allProducts: async (_parent, { input }, { models }) => {
+    return await connectionHelper(models.Product, input);
   },
 };
 
@@ -53,6 +20,7 @@ export const Mutation = {
       description: input.description,
       price: input.price,
       path: input.path,
+      status: input.status,
       imageCollection,
     });
     pubsub.publish('PRODUCT_ADDED', {
@@ -71,6 +39,7 @@ export const Mutation = {
     product.price = input.price || product.price;
     product.updatedAt = Date.now();
     product.path = input.path || product.path;
+    product.status = input.status || product.status;
 
     if (input.imageCollection) {
       const imageCollection = await models.ImageCollection.findById(

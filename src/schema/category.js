@@ -19,6 +19,14 @@ export const typeDefs = gql`
     description: String
   }
 
+  input FilterCategory {
+    and: [FilterCategory!]
+    or: [FilterCategory!]
+    title: FilterString
+    path: FilterString
+    description: FilterString
+  }
+
   enum CategorySortableFields {
     title
     createdAt
@@ -31,6 +39,7 @@ export const typeDefs = gql`
   }
 
   input CategoryConnectionInput {
+    filter: FilterCategory
     skip: Int
     limit: Int
     sort: CategorySortInput

@@ -1,4 +1,5 @@
 import { authenticate } from '../middlewares/auth.js';
+import { connectionHelper } from '../utils/connection.js';
 
 export const Query = {
   // fix: async (parent, args, { models }) => {
@@ -14,45 +15,11 @@ export const Query = {
   //   }
   //   return null;
   // },
-  category: async (parent, args, { models }) => {
+  category: async (_parent, args, { models }) => {
     return await models.Category.findById(args.id);
   },
-  allCategories: async (parent, { input }, { models }) => {
-    const { skip, limit, sort } = input || {};
-    const query = models.Category.find();
-
-    const sortField = sort?.field || 'title';
-    const sortOrder = sort?.order === 'DESC' ? -1 : 1;
-    const sortQuery = { [sortField]: sortOrder };
-    const limitQuery = limit ? limit : 10;
-    const skipQuery = skip ? skip : 0;
-
-    query.skip(skipQuery);
-    query.limit(limitQuery);
-    query.sort(sortQuery);
-
-    const nodes = await query;
-    // const totalCount = await models.Product.countDocuments(filterQuery);
-    const totalCount = await models.Category.countDocuments();
-    const currentPage = Math.ceil(skipQuery / limitQuery) + 1;
-    const pageCount = Math.ceil(totalCount / limitQuery);
-    const hasPreviousPage = currentPage > 1;
-    const hasNextPage = currentPage * limitQuery < totalCount;
-
-    const pageInfo = {
-      hasNextPage,
-      hasPreviousPage,
-      currentPage,
-      itemCount: nodes.length,
-      pageCount,
-      perPage: limitQuery,
-      totalCount,
-    };
-
-    return {
-      nodes,
-      pageInfo,
-    };
+  allCategories: async (_parent, { input }, { models }) => {
+    return connectionHelper(models.Category, input);
   },
 };
 

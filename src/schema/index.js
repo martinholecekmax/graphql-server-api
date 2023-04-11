@@ -17,6 +17,24 @@ const Query = gql`
     DESC
   }
 
+  input FilterFloat {
+    exists: Boolean
+    eq: Float
+    ne: Float
+    gt: Float
+    gte: Float
+    lt: Float
+    lte: Float
+  }
+
+  input FilterString {
+    exists: Boolean
+    eq: String
+    ne: String
+    contains: String
+    caseSensitive: Boolean
+  }
+
   type Query {
     allProducts(input: ProductConnectionInput): ProductConnection
     product(id: ID!): Product

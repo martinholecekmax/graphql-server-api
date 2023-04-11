@@ -5,6 +5,7 @@ const ProductSchema = new mongoose.Schema({
   path: String,
   description: String,
   price: Number,
+  status: String,
   imageCollection: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ImageCollection',
